@@ -1,0 +1,13 @@
+flask
+flask_sqlalchemy
+flask_httpauth
+flask_restful
+flask_redis
+
+raven[flask]
+pyjwt
+redis
+
+validators
+requests
+jsonschema
