@@ -18,15 +18,46 @@ depends_on = None
 
 def upgrade():
     op.create_table(
+        'domains',
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('name', sa.String(length=128), nullable=False),
+        sa.Column('description', sa.String(length=128), nullable=True),
+        sa.Column('enabled', sa.Integer(), nullable=False, default=0),
+        sa.PrimaryKeyConstraint('id')
+    )
+
+    op.create_table(
+        'projects',
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('domain', sa.Integer(), nullable=False),
+        sa.Column('name', sa.String(length=128), nullable=False),
+        sa.Column('description', sa.String(length=128), nullable=True),
+        sa.Column('enabled', sa.Integer(), nullable=False, default=0),
+        sa.PrimaryKeyConstraint('id')
+    )
+
+    op.create_table(
+        'roles',
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('project', sa.Integer(), nullable=False),
+        sa.Column('name', sa.String(length=128), nullable=False),
+        sa.Column('description', sa.String(length=128), nullable=True),
+        sa.Column('enabled', sa.Integer(), nullable=False, default=0),
+        sa.PrimaryKeyConstraint('id')
+    )
+
+    op.create_table(
         'users',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('email', sa.String(length=128), nullable=False),
         sa.Column('password', sa.String(length=32), nullable=True),
-        sa.Column('status', sa.Integer(), nullable=True),
+        sa.Column('enabled', sa.Integer(), nullable=True),
         sa.PrimaryKeyConstraint('id')
     )
 
 
-
 def downgrade():
+    op.drop_table('domains')
+    op.drop_table('projects')
+    op.drop_table('roles')
     op.drop_table('users')
