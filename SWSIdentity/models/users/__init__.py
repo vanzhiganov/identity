@@ -1,8 +1,9 @@
+
 from SWSIdentity import db
 
 
-class Domains(db.Model):
+class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128), nullable=False)
-    description = db.Column(db.String(128))
+    email = db.Column(db.String(128), nullable=False)
+    password = db.Column(db.String(32))
     enabled = db.Column(db.Integer, nullable=False, default=0)
