@@ -1,4 +1,4 @@
-"""empty message
+"""Create tables `domains`, `projects`, `roles`, `users`
 
 Revision ID: 7b4c0fe2e47d
 Revises: dcf9e4a81439

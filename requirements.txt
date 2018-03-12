@@ -5,6 +5,7 @@ flask_httpauth
 flask_restful
 flask_redis
 
+click
 raven[flask]
 pyjwt
 redis
