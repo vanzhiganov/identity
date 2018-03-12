@@ -1,16 +1,6 @@
-#!/usr/bin/env python
-import os
-# from SWSIdentity import init_app
-import click
+from SWSIdentity import init_manager
 
-# os.set.environ('FLASK_APP', 'identity-manage')
+manager = init_manager()
 
-# app = init_app()
-
-
-@click.command()
-def initdb():
-    """Initialize the database."""
-    click.echo('Init the db')
-
-# initdb()
+if __name__ == "__main__":
+    manager.run()

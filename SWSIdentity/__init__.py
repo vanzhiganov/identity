@@ -7,7 +7,8 @@ import time
 from flask import Flask, g, request
 from flask_redis import FlaskRedis
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
 from flask_restful import Resource, Api
 from raven.contrib.flask import Sentry
 
@@ -59,10 +60,29 @@ def init_app():
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/users/<int:user_id>/groups')
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/users/<int:user_id>/projects')
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/users/<int:user_id>/password')
-    
+
     return app
 
 
 def init_celery():
     """Init Celery"""
     return
+
+
+def init_manager():
+    from SWSIdentity.commands import CommandAdminCreate
+    from SWSIdentity.config import config
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = config.get('database', 'uri')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    app.config['REDIS_URL'] = config.get('redis', 'url')
+
+    db.init_app(app)
+    migrate = Migrate(app, db)
+    manager = Manager(app)
+
+    manager.add_command('db', MigrateCommand)
+    manager.add_command('admin_create', CommandAdminCreate)
+
+    return manager

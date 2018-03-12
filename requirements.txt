@@ -4,6 +4,7 @@ flask_migrate
 flask_httpauth
 flask_restful
 flask_redis
+flask_script
 
 click
 raven[flask]
