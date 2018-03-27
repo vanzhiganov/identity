@@ -14,9 +14,14 @@ Request
         "domain": "rest-api.ru"
     }'
 
-
 Response
 
     {
-        "token": "<jwt-token>"
+        "response": {
+            "token": "<JWT>"
+        },
+        "status": {
+            "code": 0,
+            "message": "Success"
+        }
     }
