@@ -54,8 +54,8 @@ def init_app():
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/groups/<int:group_id>')
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/groups/<int:group_id>/users/')
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/groups/<int:group_id>/users/<int:user_id>')
-    ## Users
-    # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/users/')
+    # Users
+    api.add_resource(resources.ResourceUsers, '/api/identity/0.1/users/')
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/users/<int:user_id>')
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/users/<int:user_id>/groups')
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/users/<int:user_id>/projects')
