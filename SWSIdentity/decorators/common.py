@@ -1,6 +1,7 @@
 """
 Copyright (C) 2015, 2018 Stack Web Services LLC. All rights reserved.
 """
+from hashlib import md5
 from base64 import b64decode
 import json
 from functools import wraps
@@ -29,13 +30,13 @@ def parse_authorization_string():
         return auth_type, [email, password]
 
 
-def requires_api_auth(f):
-    @wraps(f)
+def requires_api_auth(func):
+    @wraps(func)
     def decorated_function(*args, **kwargs):
         auth_type, auth_creds = parse_authorization_string()
         if auth_type == 'token':
             # redis key
-            redis_key = 'auth_key_'.format(auth_creds)
+            redis_key = 'auth_key_{}'.format(auth_creds)
             account_id = redis.get(redis_key)
             if not account_id:
                 return {
@@ -50,14 +51,12 @@ def requires_api_auth(f):
                     'status': {'code': 1, 'message': 'auth fails'}
                 }
             user_data = Users.get_item_by_email(email)
-                
         g.account = user_data
-        
         if not g.account:
             return {
                 'status': {'code': 1, 'message': 'auth fails'}
             }
-        return f(*args, **kwargs)
+        return func(*args, **kwargs)
     return decorated_function
 
 
@@ -81,12 +80,15 @@ def requires_login(func):
 
 
 def requires_api_login(func):
+    """
+    TODO: add docstring
+    """
     @wraps(func)
-    def decorated_function(*args, **kwargs):
+    def decorated_function(*args, **kwargs): # pylint: disable=missing-docstring
         # Check session
         required = ['email', 'password']
         success = True
-        print(request.json)
+        #print(request.json)
 
         for item in required:
             if item in session and success:
@@ -102,23 +104,25 @@ def requires_api_login(func):
     return decorated_function
 
 
-def required_jwt_token(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
+def required_jwt_token(func):
+    """decorator for JWT checking
+    """
+    @wraps(func)
+    def decorated_function(*args, **kwargs): # pylint: disable=missing-docstring
         jwt_token = request.headers.get('X-Token')
         is_cookie = False
         if request.cookies.get('procdn.net'):
             is_cookie = True
             jwt_token = request.cookies.get('procdn.net')
-
         try:
-            x = jwt.decode(
+            # extract jwt content
+            content = jwt.decode(
                 jwt_token,
                 current_app.config['JWT_SECRET'],
                 algorithm=current_app.config['JWT_ALGORITHM']
             )
-        except Exception as e:
-            current_app.logger.error(e)
+        except Exception as error:
+            current_app.logger.error(error)
             if is_cookie:
                 resp = make_response(redirect(url_for('account.login')))
                 resp.set_cookie('procdn.net', expires=0)
@@ -126,15 +130,15 @@ def required_jwt_token(f):
             return {
                 "status": get_status(7)
             }
-        if not redis.get(x['token']):
+        if not redis.get(content['token']):
             if is_cookie:
                 resp = make_response(redirect(url_for('account.login')))
                 resp.set_cookie('procdn.net', expires=0)
                 return resp
             return get_status(7)
-        g.token = x['token']
+        g.token = content['token']
         g.account = json.loads(redis.get(g.token))
         expire = 3600
         redis.expire(g.token, expire)
-        return f(*args, **kwargs)
+        return func(*args, **kwargs)
     return decorated_function
