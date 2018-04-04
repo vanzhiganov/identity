@@ -2,9 +2,11 @@
 
 ## Endpoints
 
-`[POST] /api/identity/0.1/tokens/` - Create new JWT-token
+### `[POST] /api/identity/0.1/tokens/`
 
-Request
+Create new JWT-token
+
+**Request**
 
     curl -X POST 'https://rest-api.ru/api/identity/0.1/tokens/' \
     -H 'Content-Type: application/json' \
@@ -14,7 +16,7 @@ Request
         "domain": "rest-api.ru"
     }'
 
-Response
+**Response**
 
     {
         "response": {
@@ -25,3 +27,13 @@ Response
             "message": "Success"
         }
     }
+
+### `[DELETE] /api/identity/0.1/tokens/`
+
+Revoke current JWT-token
+
+**Request**
+
+    curl -X DELETE 'https://rest-api.ru/api/identity/0.1/tokens/' \
+    -H '{JWT}'
+
