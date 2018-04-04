@@ -12,11 +12,13 @@ from flask_script import Manager
 from flask_restful import Resource, Api
 from raven.contrib.flask import Sentry
 
-redis = FlaskRedis()
-db = SQLAlchemy()
+redis = FlaskRedis() # pylint: disable=invalid-name
+db = SQLAlchemy() # pylint: disable=invalid-name
 
 
 def init_app():
+    """Init Application
+    """
     from SWSIdentity import resources
     from SWSIdentity.config import config
 
@@ -53,7 +55,8 @@ def init_app():
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/groups/')
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/groups/<int:group_id>')
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/groups/<int:group_id>/users/')
-    # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/groups/<int:group_id>/users/<int:user_id>')
+    # api.add_resource(
+    #     resources.ResourceTokens, '/api/identity/0.1/groups/<int:group_id>/users/<int:user_id>')
     # Users
     api.add_resource(resources.ResourceUsers, '/api/identity/0.1/users/')
     # api.add_resource(resources.ResourceTokens, '/api/identity/0.1/users/<int:user_id>')
@@ -70,6 +73,7 @@ def init_celery():
 
 
 def init_manager():
+    """Init manager"""
     from SWSIdentity.commands import CommandAdminCreate
     from SWSIdentity.config import config
     app = Flask(__name__)

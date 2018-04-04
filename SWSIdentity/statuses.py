@@ -10,4 +10,5 @@ status = {
 }
 
 def get_status(code):
+    """Return complete message by status ID"""
     return {'code': code, 'message': status[code]['message']}
