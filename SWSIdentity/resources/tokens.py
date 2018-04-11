@@ -6,20 +6,19 @@ from uuid import uuid4
 import jwt
 from flask import current_app, g, request
 from flask_restful import Resource
-
-from SWSIdentity.models.users import Users
 from SWSIdentity.statuses import get_status
-from SWSIdentity.decorators import required_jwt_token, requires_api_auth
+from SWSIdentity.Controllers.Users import ControllerUsers
+from SWSIdentity.decorators import check_token, check_using_cookie
 from SWSIdentity import redis
 
 
 class ResourceTokens(Resource):
     """Token endpoint class"""
-    def user_data_to_dict(self, data):
-        return {
-            "id": str(data.id),
-            "email": data.email,
-        }
+    method_decorators = {
+        'post': [check_using_cookie],
+        'get': [check_token],
+        'delete': [check_token]
+    }
 
     def post(self):
         """Create new token
@@ -28,24 +27,45 @@ class ResourceTokens(Resource):
         -d '{"email": "vanzhiganov@ya.ru", "password": "...", "domain": "stackwebservices.com"}' \
         -H 'Content-Type: application/json'
         """
-        # TODO: jsonschema
-        creds = request.json
+        schema = {
+            'type': 'object',
+            'properties': {
+                'email': {'type': 'string'},
+                'password': {'type': 'string'},
+                'domain': {'type': 'string'}
+            },
+            'required': [
+                'email', 'password'
+            ]
+        }
+        credentials = request.json
 
-        if not Users.auth(creds.get('email'), creds.get('password'), 1):
+        print(credentials)
+
+        email = credentials.get('email')
+        password = credentials.get('password')
+
+        if not ControllerUsers().auth(email, password, 'default'):
             return {
                 'status': get_status(1)
             }
-        user_data = Users.get_item_by_email(creds['email'])
+        user_data = ControllerUsers().get_by_email(email)
 
         expire = 3600
         token = str(uuid4())
-        redis.set(token, json.dumps(self.user_data_to_dict(user_data)))
+
+        redis.set(token, json.dumps(user_data))
         redis.expire(token, expire)
+
         jwt_token = jwt.encode(
             {'token': token},
             current_app.config['JWT_SECRET'],
             algorithm=current_app.config['JWT_ALGORITHM']
         )
+        if g.use_cookie:
+            return {
+                "status": get_status(0)
+            }, 200, {'Set-Cookie': 'token={}'.format(token)}
         return {
             "response": {
                 "token": jwt_token.decode()
@@ -53,7 +73,6 @@ class ResourceTokens(Resource):
             "status": get_status(0)
         }
 
-    @required_jwt_token
     def delete(self):
         """Revoke current token. Delete token from redis
         """

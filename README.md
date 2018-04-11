@@ -2,13 +2,13 @@
 
 ## Endpoints
 
-### `[POST] /api/identity/0.1/user/`
+### `[POST] /api/identity/0.1/users`
 
 Create a new user account
 
 **Request**
 
-    curl -X POST 'https://rest-api.ru/api/identity/0.1/user/' \
+    curl -X POST 'https://rest-api.ru/api/identity/0.1/users' \
     -H 'Content-Type: application/json' \
     -d '{
         "email": "vanzhiganov@ya.ru",
@@ -25,13 +25,13 @@ Create a new user account
         }
     }
 
-### `[POST] /api/identity/0.1/tokens/`
+### `[POST] /api/identity/0.1/tokens`
 
 Create new JWT-token
 
 **Request**
 
-    curl -X POST 'https://rest-api.ru/api/identity/0.1/tokens/' \
+    curl -X POST 'https://rest-api.ru/api/identity/0.1/tokens' \
     -H 'Content-Type: application/json' \
     -d '{
         "email": "vanzhiganov@ya.ru",
@@ -51,12 +51,11 @@ Create new JWT-token
         }
     }
 
-### `[DELETE] /api/identity/0.1/tokens/`
+### `[DELETE] /api/identity/0.1/tokens`
 
 Revoke current JWT-token
 
 **Request**
 
-    curl -X DELETE 'https://rest-api.ru/api/identity/0.1/tokens/' \
-    -H '{JWT}'
-
+    curl -X DELETE 'https://rest-api.ru/api/identity/0.1/tokens' \
+    -H 'X-Token: {JWT}'
