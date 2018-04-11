@@ -1,14 +1,15 @@
+from sqlalchemy import Column, Integer, String
 from SWSIdentity import db
 
 
 class Users(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(128), nullable=False)
-    password = db.Column(db.String(32))
-    enabled = db.Column(db.Integer, nullable=False, default=0)
+    id = Column(Integer, primary_key=True)
+    email = Column(String(128), nullable=False)
+    password = Column(String(32))
+    enabled = Column(Integer, nullable=False, default=0)
 
 
 class RelUsersRoles(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user = db.Column(db.Integer, index=True)
-    role = db.Column(db.Integer, index=True)
+    id = Column(Integer, primary_key=True)
+    user = Column(Integer, index=True)
+    role = Column(Integer, index=True)
