@@ -2,15 +2,11 @@
 Copyright (C) 2015, 2018 Stack Web Services LLC. All rights reserved.
 """
 import json
-from hashlib import sha512
 from uuid import uuid4
 import jwt
 from flask import current_app, g, request
 from flask_restful import Resource
-
-from SWSIdentity.Models.users import Users
 from SWSIdentity.statuses import get_status
-# from SWSIdentity.decorators import required_jwt_token, requires_api_auth
 from SWSIdentity.Controllers.Users import ControllerUsers
 from SWSIdentity.decorators import check_token, check_using_cookie
 from SWSIdentity import redis
@@ -23,23 +19,6 @@ class ResourceTokens(Resource):
         'get': [check_token],
         'delete': [check_token]
     }
-
-    @staticmethod
-    def user_data_to_dict(data):
-        """Представление данных учетных записей
-
-        :param data: dict|object
-        :return: dict
-        """
-        return {"id": str(data.id), "email": data.email}
-
-    @staticmethod
-    def generate_token():
-        """Генерация токена
-
-        :return: str
-        """
-        return sha512(str(uuid4).encode()).hexdigest()
 
     def post(self):
         """Create new token
@@ -75,7 +54,7 @@ class ResourceTokens(Resource):
         expire = 3600
         token = str(uuid4())
 
-        redis.set(token, json.dumps(user_data))#self.user_data_to_dict(user_data)))
+        redis.set(token, json.dumps(user_data))
         redis.expire(token, expire)
 
         jwt_token = jwt.encode(
